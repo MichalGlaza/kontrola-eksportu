@@ -55,3 +55,10 @@ Endpointy: /tariff/rest/goods-nomenclature/codes oraz /tariff/rest/goods-nomencl
 
 ## Testy
 python -m unittest discover -s tests
+
+## Wersja 0.4 — karta analizy
+Po pobraniu środków w Wyszukiwarce ISZTAR wybierz „Dołącz ten odczyt do karty analizy”, następnie przejdź do modułu karty. Dołączenie jest świadomym wyborem użytkownika, a zatwierdzona karta zawiera kopię odczytu z datą i adresem źródła. Kod karty musi odpowiadać kodowi odczytu. Dane nie są ponownie pobierane przy generowaniu karty.
+
+Karta zawiera opis centrali, trasę, odbiorcę i zastosowanie końcowe, osobne partie z roboczymi kodami, uzasadnienie klasyfikacji, uwagi oraz zakres niewykonanej weryfikacji. Można pobrać JSON lub samodzielny HTML do wydruku i zapisania jako PDF w przeglądarce. Eksport TXT został zastąpiony czytelnym HTML. Nie ma automatycznej oceny prawnej ani trwałego zapisu formularza. Pobierz zatwierdzoną kartę przed opuszczeniem sesji.
+
+Test interfejsu: `PYTHONPATH=. python tests/smoke_card.py` (wyłącznie fikcyjne dane i hasło testowe).

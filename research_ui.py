@@ -1,3 +1,4 @@
+import copy
 import json
 from datetime import datetime
 from zoneinfo import ZoneInfo
@@ -85,6 +86,9 @@ def render():
     response = st.session_state.get('measure_result')
     if not response or response['code'] != selected or response['date'] != on_date.isoformat() or tuple(response['search_key']) != key:
         return
+    if st.button('Dołącz ten odczyt do karty analizy'):
+        st.session_state['card_source'] = copy.deepcopy(response)
+        st.success('Dołączono odczyt. W menu po lewej wybierz Karta analizy eksportu.')
     st.subheader('Środki pozataryfowe przypisane do kodu')
     st.caption(f"Pobrano: {response['fetched_at']} · stan na: {response['date']}")
     st.link_button('Źródłowa odpowiedź ISZTAR', response['source'])
