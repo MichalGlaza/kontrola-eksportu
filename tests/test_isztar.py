@@ -3,6 +3,21 @@ from unittest.mock import patch
 from isztar import flatten, search_catalog, get_measures, group_measures, load_catalog, SourceError
 
 class ClientTests(unittest.TestCase):
+    def test_accept_header_compatible_with_isztar(self):
+        from isztar import request_json
+        with patch('isztar.requests.get') as mock:
+            mock.return_value.status_code=200
+            mock.return_value.json.return_value={'description':'Maszyny'}
+            mock.return_value.url='https://ext-isztar4.mf.gov.pl/'
+            data, _ = request_json('codes', {})
+            self.assertEqual(mock.call_args.kwargs['headers']['Accept'], '*/*')
+            self.assertEqual(data['description'], 'Maszyny')
+    def test_non_json_response_still_rejected(self):
+        from isztar import request_json
+        with patch('isztar.requests.get') as mock:
+            mock.return_value.status_code=200
+            mock.return_value.json.side_effect=ValueError('HTML instead of JSON')
+            with self.assertRaises(SourceError):request_json('codes', {})
     def test_full_parent_context_and_leaf_only(self):
         tree={'description':'Maszyny','subgroup':[{'code':'841583','description':'Klimatyzatory bez agregatu','subgroup':[{'code':'8415830090','description':'Pozostałe'}]}]}
         rows=flatten(tree)

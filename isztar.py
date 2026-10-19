@@ -12,7 +12,9 @@ class SourceError(RuntimeError):
 
 def request_json(endpoint, params):
     try:
-        r = requests.get(BASE + endpoint, params=params, timeout=(8, 25), headers={'Accept': 'application/json'})
+        # ISZTAR rejects application/json with HTTP 406 despite returning JSON.
+        # Accept its advertised representation, then validate the JSON below.
+        r = requests.get(BASE + endpoint, params=params, timeout=(8, 25), headers={'Accept': '*/*'})
         if r.status_code != 200:
             try:
                 reason = '; '.join(e.get('error-reason', '') for e in r.json().get('errors', []))
