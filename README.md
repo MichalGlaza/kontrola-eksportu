@@ -1,5 +1,5 @@
 # Kontrola eksportu — Streamlit
-Wersja 0.2: formularz przygotowania analizy. Nie ustala kodów i nie sprawdza sankcji.
+Wersja 0.3: wyszukiwarka oficjalnej nomenklatury ISZTAR i odczyt środków. Nie jest pełną kontrolą sankcyjną.
 
 ## Funkcje
 - Wspólne hasło, sprawdzane po stronie serwera; bez indywidualnych kont.
@@ -30,7 +30,8 @@ streamlit run app.py
 Ustaw prawdziwe hasło w lokalnym .streamlit/secrets.toml (plik ignorowany przez Git).
 
 ## Ograniczenia
-- Nie podłączono automatycznych danych taryfowych ani przepisów.
+- Podłączono oficjalne API ISZTAR. Nie pobrano pełnych aktualnych aktów ani załączników prawnych.
+- Tranzyt, kontrahenci, zastosowanie końcowe i polskie sankcje nie są automatycznie oceniane.
 - Nie wydaje się oceny dopuszczalności eksportu lub tranzytu.
 - Nie ma trwałej historii, synchronizacji między użytkownikami, wczytywania kart ani raportu PDF.
 - Hasło jest wspólne. Zmiana sekretu unieważnia sesję przy następnym wykonaniu aplikacji.
@@ -42,3 +43,15 @@ Ustaw prawdziwe hasło w lokalnym .streamlit/secrets.toml (plik ignorowany przez
 2. Klasyfikacja z uzasadnieniem i pytaniami o brakujące cechy.
 3. Wersjonowane źródła prawne i oddzielne kontrole eksportu/tranzytu.
 4. Raport z artykułem, załącznikiem, pozycją oraz datą weryfikacji.
+
+
+## Moduł ISZTAR
+Wybierz moduł w bocznym panelu, datę i zakres. Wpisz słowo z nomenklatury, np. klimatyzator, lub prefiks kodu. Domyślny zakres to strona 16 API (sekcja XVI). Cała nomenklatura pobiera wszystkie strony z parametru links.last; błąd dowolnej strony blokuje wynik zamiast udawać kompletną bazę.
+Wybierz kod końcowy i pobierz środki. Pokazywane są wszystkie środki pozataryfowe, rozdzielone na RU, BY i pozostałe kraje/grupy. Grupy krajów nie są automatycznie rozstrzygane. Warunki i wyłączenia zawsze wymagają oceny.
+Wyszukiwanie jest tekstowe (wszystkie słowa), nie semantyczne. Nie klasyfikuje dowolnych produktów na podstawie składu. Wyniki zawierają pełną ścieżkę opisu; brak dopasowania nie jest zgodą na eksport. Limit widoku: 100 wyników, ze wskazaniem pełnej liczby.
+Cache nomenklatury: godzina; środków: 15 minut. Każdy wynik podaje datę zapytania i rzeczywisty czas pobrania. Czas pobrania nie dowodzi aktualności przepisów. Daty przyszłe są blokowane. Karta analizy i odczyt ISZTAR mają oddzielne eksporty; odczyt nie zmienia automatycznie statusu karty.
+Dokumentacja źródła: https://ext-isztar4.mf.gov.pl/taryfa_celna/json-api?lang=PL
+Endpointy: /tariff/rest/goods-nomenclature/codes oraz /tariff/rest/goods-nomenclature/measures.
+
+## Testy
+python -m unittest discover -s tests

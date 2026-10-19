@@ -43,7 +43,7 @@ def authenticate():
 authenticate()
 with st.sidebar:
     st.header("Kontrola eksportu")
-    st.caption("Wersja 0.2 · formularz przygotowawczy")
+    st.caption("Wersja 0.3 · ISZTAR + karta analizy")
     if st.button("Wyloguj"):
         st.session_state.clear()
         st.rerun()
@@ -53,6 +53,12 @@ with st.sidebar:
     st.link_button("Białoruś — 765/2006", "https://eur-lex.europa.eu/eli/reg/2006/765")
     st.link_button("Polska lista sankcyjna", "https://www.gov.pl/web/mswia/lista-osob-i-podmiotow-objetych-sankcjami")
     st.caption("Linki służą do ręcznego sprawdzenia. Ich otwarcie nie zmienia statusu analizy.")
+
+page = st.sidebar.radio("Moduł", ["Wyszukiwarka ISZTAR", "Karta analizy eksportu"])
+if page == "Wyszukiwarka ISZTAR":
+    from research_ui import render
+    render()
+    st.stop()
 
 st.title("Karta analizy eksportu")
 st.warning("Prototyp nie ustala kodu celnego i nie sprawdza sankcji. Wszystkie wyniki pozostają NIEZWERYFIKOWANE.")
@@ -117,3 +123,4 @@ if "report" in st.session_state:
              "", "Nie przeprowadzono klasyfikacji ani kontroli sankcji. Karta nie stanowi potwierdzenia dopuszczalności eksportu."]
     st.download_button("Pobierz raport TXT", "\n".join(lines), "karta-eksportu.txt", "text/plain")
 st.caption("Dane są przechowywane wyłącznie w bieżącej sesji. Pobierz kartę przed zamknięciem. Nie ma jeszcze wspólnej bazy ani historii analiz.")
+
