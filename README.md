@@ -62,3 +62,14 @@ Po pobraniu środków w Wyszukiwarce ISZTAR wybierz „Dołącz ten odczyt do ka
 Karta zawiera opis centrali, trasę, odbiorcę i zastosowanie końcowe, osobne partie z roboczymi kodami, uzasadnienie klasyfikacji, uwagi oraz zakres niewykonanej weryfikacji. Można pobrać JSON lub samodzielny HTML do wydruku i zapisania jako PDF w przeglądarce. Eksport TXT został zastąpiony czytelnym HTML. Nie ma automatycznej oceny prawnej ani trwałego zapisu formularza. Pobierz zatwierdzoną kartę przed opuszczeniem sesji.
 
 Test interfejsu: `PYTHONPATH=. python tests/smoke_card.py` (wyłącznie fikcyjne dane i hasło testowe).
+
+## Wersja 0.5 — sankcje i tranzyt (kontrola częściowa)
+Moduł „Sankcje i tranzyt” wykonuje osobne zestawienia dla eksportu do Rosji, eksportu do Białorusi i tranzytu przez każdy z tych krajów. Dla dokładnego kodu TARIC i daty pobiera ISZTAR. Wpisy o jednoznacznym kierunku wywozowym pokazuje wraz z warunkami; pozostałe rekordy, w tym import i grupy krajów, pozostają dostępne do przeglądu. Żaden warunek zezwolenia nie jest automatycznie uznawany za spełniony.
+
+Porównanie kodów CN obejmuje wyłącznie wybrane załączniki przemysłowe: 833/2014 XXIII i XXXVII oraz 765/2006 XIV, XVIII i XIX. Wymaga wczytania HTML konkretnej wersji tekstu skonsolidowanego EUR-Lex i podania jej adresu z identyfikatorem CELEX i datą. Importer odczytuje tabelę od wskazanego nagłówka do następnego załącznika, zachowuje „ex”, kontekst i wiersze nierozpoznane. Sprawdzenie identyfikatora w pliku jest kontrolą struktury, a nie potwierdzeniem pochodzenia. Moduł nie potwierdza aktualności, kompletności prawnej ani autentyczności dokumentu. Automatyczny import najnowszych aktów nie został wdrożony.
+
+Brak dopasowania oznacza wyłącznie brak kodu w odczytanych wierszach. Brak dokumentu, nieprzetworzony wiersz lub nowszy dokument dla historycznej daty nie daje wyniku „dozwolone”. Pozycje techniczne, towary podwójnego zastosowania, pozostałe załączniki, kontrahenci, banki, przewoźnicy, sankcje polskie i wyjątki nie są automatycznie weryfikowane.
+
+Wynik można pobrać do JSON i świadomie dołączyć do karty. Karta wymaga zgodności kodu głównego, a dla każdej partii pokazuje zgodność jej własnego kodu i daty z datą kontroli częściowej. Brak kodu partii nie powoduje odziedziczenia kodu centrali. Taki wynik pozostaje analizą częściową, bez zgody na wysyłkę.
+
+Testy: `python -m unittest discover -s tests -v`, `PYTHONPATH=. python tests/smoke_sanctions.py`. Testy importera korzystają z jawnie fikcyjnego HTML. Nie przeprowadzono jeszcze walidacji importera na rzeczywistym pliku prawnym EUR-Lex; należy ją wykonać przed poleganiem na wynikach porównania załączników.

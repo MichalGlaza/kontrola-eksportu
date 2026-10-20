@@ -33,4 +33,21 @@ def report_html(report):
         body += '<h3>Pełna odpowiedź źródłowa (w tym cła i podatki)</h3><pre>'+esc(json.dumps(source['data'],ensure_ascii=False,indent=2))+'</pre>'
     else:
         body += '<p>Nie załączono odczytu ISZTAR.</p>'
+    screening = report.get('sanctions_screening')
+    if screening:
+        body += '<h2>7. Sankcje i tranzyt — wynik częściowy</h2>'
+        body += '<p>'+esc(screening['status'])+'</p>'
+        body += '<p>Wynik dotyczy kodu '+esc(screening['code'])+' i daty '+esc(screening['date'])+'. Nie obejmuje automatycznie innych partii i dat.</p>'
+        for coverage in report.get('shipment_screening_coverage', []):
+            body += table([('Partia', coverage['part_number']), ('Kod', coverage['code']), ('Data', coverage['date']), ('Zakres', coverage['status'])])
+        for case in screening['cases']:
+            body += '<h3>'+esc(case['label'])+'</h3>'+table([('Status',case['status']),('Wybrana podstawa',case['regulation']+' — '+case['basis'])])
+            if case.get('isztar'):
+                body += table([('Wpisy ISZTAR',case['isztar']['status']),('Liczba wpisów wywozowych',len(case['isztar']['records']))])
+            for check in case['annex_checks']:
+                body += table([('Załącznik',check['annex']),('Wynik porównania',check['status'])])
+                for hit in check['matches']:
+                    body += table([('Kod w załączniku',hit['label']),('Opis',hit['description'])])
+        body += '<h3>Pełny wynik, metryka źródeł i pozostały zakres kontroli</h3>'
+        body += '<pre>'+esc(json.dumps(screening,ensure_ascii=False,indent=2))+'</pre>'
     return '<!doctype html><html lang="pl"><meta charset="utf-8"><title>Karta analizy eksportu</title><style>body{font:14px Arial,sans-serif;max-width:1000px;margin:35px auto;color:#172838;padding:20px}h1,h2{color:#174b69}h2{margin-top:28px}table{border-collapse:collapse;width:100%}td,th{border:1px solid #ccd5dc;padding:9px;text-align:left;vertical-align:top;white-space:pre-wrap;overflow-wrap:anywhere}th{width:28%;background:#f0f5f7}p{white-space:pre-wrap}.status{padding:12px;background:#fff0c2;font-weight:bold}pre{white-space:pre-wrap;overflow-wrap:anywhere;font:11px monospace;border:1px solid #ccd5dc;padding:12px}@media print{body{margin:0;padding:0;font-size:10pt}h2,h3{break-after:avoid}tr{break-inside:avoid}@page{size:A4;margin:16mm}}</style><body>'+body+'</body></html>'

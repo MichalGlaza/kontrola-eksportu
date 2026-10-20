@@ -43,7 +43,7 @@ def authenticate():
 authenticate()
 with st.sidebar:
     st.header("Kontrola eksportu")
-    st.caption("Wersja 0.4 · ISZTAR + karta analizy")
+    st.caption("Wersja 0.5 · ISZTAR + karta analizy")
     if st.button("Wyloguj"):
         st.session_state.clear()
         st.rerun()
@@ -54,9 +54,14 @@ with st.sidebar:
     st.link_button("Polska lista sankcyjna", "https://www.gov.pl/web/mswia/lista-osob-i-podmiotow-objetych-sankcjami")
     st.caption("Linki służą do ręcznego sprawdzenia. Ich otwarcie nie zmienia statusu analizy.")
 
-page = st.sidebar.radio("Moduł", ["Wyszukiwarka ISZTAR", "Karta analizy eksportu"])
+page = st.sidebar.radio("Moduł", ["Wyszukiwarka ISZTAR", "Karta analizy eksportu", "Sankcje i tranzyt"])
 if page == "Wyszukiwarka ISZTAR":
     from research_ui import render
+    render()
+    st.stop()
+
+if page == "Sankcje i tranzyt":
+    from sanctions_ui import render
     render()
     st.stop()
 
